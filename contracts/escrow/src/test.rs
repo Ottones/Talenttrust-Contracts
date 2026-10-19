@@ -93,8 +93,14 @@ fn dispute_split_and_cancel() {
         &vec![&s.env, 400i128],
     );
     s.escrow.deposit_funds(&id, &400);
-    s.escrow.open_dispute(&id, &s.freelancer);
-    s.escrow.resolve_dispute(&id, &2_500);
+    s.escrow.open_dispute(
+        &id,
+        &s.freelancer,
+        &DisputeReason::NotDelivered,
+        &BytesN::from_array(&s.env, &[1u8; 32]),
+    );
+    s.escrow
+        .resolve_dispute(&id, &2_500, &BytesN::from_array(&s.env, &[2u8; 32]));
     assert_eq!(s.token.balance(&s.freelancer), 100);
     assert_eq!(s.token.balance(&s.client), 900);
 
