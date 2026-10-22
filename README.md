@@ -89,6 +89,12 @@ codes are never renumbered or reused.
 | `("evidence", id)` | `(caller, hash)` | ``submit_evidence`` succeeds |
 | `("resolved", id)` | `(freelancer_bps, rationale)` | ``resolve_dispute`` succeeds |
 
+### Reputation Governance & Audit Trail
+- Ratings are recorded per escrow as `RatingRecord { freelancer, rating, issued_at, voided }`.
+- Protocol admin can void fraudulent or collusive ratings via `void_rating(id, reason)`, which subtracts the rating and 1 contract from the freelancer's reputation and emits `("rep_void", id) -> (freelancer, rating, reason)`.
+- Voided escrows remain flagged so they cannot be re-rated (`ReputationAlreadyIssued`). Attempting to void twice returns `EscrowError::RatingAlreadyVoided (19)`.
+- Ratings issued before this audit trail upgrade have no `RatingRecord` and return `EscrowError::RatingNotFound (18)`.
+
 ## Build and test
 
 ```bash
